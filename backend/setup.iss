@@ -2,13 +2,13 @@
 [Setup]
 AppId={{B8F9C4E2-1234-5678-9ABC-DEF012345678}
 AppName=RI Tracker
-AppVersion=1.0.12
-AppVerName=RI Tracker 1.0.12
+AppVersion=1.0.13
+AppVerName=RI Tracker 1.0.13
 DefaultDirName={autopf}\RI Tracker
 DefaultGroupName=RI Tracker
 AllowNoIcons=yes
 OutputDir=dist
-OutputBaseFilename=RI_Tracker_Installer_v1.0.12
+OutputBaseFilename=RI_Tracker_Installer_v1.0.13
 Compression=lzma
 SolidCompression=yes
 SetupIconFile=icon.ico
@@ -21,7 +21,7 @@ AppPublisherURL=https://remoteintegrity.com
 AppSupportURL=https://remoteintegrity.com/support
 AppUpdatesURL=https://remoteintegrity.com/downloads
 AppCopyright=Copyright (C) 2025 RemoteIntegrity LLC
-VersionInfoVersion=1.0.12.0
+VersionInfoVersion=1.0.13.0
 MinVersion=6.1sp1
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64

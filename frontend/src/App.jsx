@@ -716,7 +716,7 @@ function AppContent() {
     // App constants
     const appIcon = logo;
     const appName = "RI Tracker";
-    const appVersion = "1.0.12";
+    const appVersion = "1.0.13";
 
     return (
         <div className="app-container gradient-bg">
@@ -932,8 +932,8 @@ function AppContent() {
                                     )}
                                 </button>
                                 {timerError && (
-                                    <div className="absolute top-full right-0 mt-2 z-50">
-                                        <div className="bg-red-50 border border-red-200 text-red-600 text-xs px-2 py-1 rounded-lg max-w-32">
+                                    <div className="fixed bottom-20 left-6 right-6 mt-2 z-[100]">
+                                        <div className="bg-red-50 border border-red-200 text-red-600 text-xs px-4 py-3 rounded-lg shadow-lg max-w-[90%] mx-auto break-words">
                                             {timerError}
                                         </div>
                                     </div>

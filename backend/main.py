@@ -32,7 +32,7 @@ except ImportError:
 
 
 APP_NAME = "RI_Tracker"
-APP_VERSION = "1.0.12"  # Current version of the application
+APP_VERSION = "1.0.13"  # Current version of the application
 # GITHUB_REPO = "younusFoysal/RI-Tracker-Lite"
 GITHUB_REPO = "RemoteIntegrity/RI-Tracker-Lite-Releases"
 DATA_DIR = os.path.join(os.getenv('LOCALAPPDATA') or os.path.expanduser("~/.config"), APP_NAME)
@@ -264,10 +264,18 @@ class Api:
             "success": True,
             "elapsed_time": elapsed_time
         }
+        
+    def test_long_error_message(self):
+        """Test function to simulate a long error message"""
+        # Simulate a long error message for testing the UI
+        long_message = "Employee already has an active session. Please stop the current session before starting a new one. Active session ID: jhbasuydgfbyus6854657234jbhj"
+        window.evaluate_js('window.toastFromPython("Test long error message", "error")')
+        return {"success": False, "message": long_message}
 
     def create_session(self):
         """Create a new session via API"""
         if not self.auth_token:
+            window.evaluate_js('window.toastFromPython("Not authenticated. Please log in.", "error")')
             return {"success": False, "message": "Not authenticated"}
         
         try:
@@ -295,6 +303,7 @@ class Api:
                             company_id = profile['data']['companyId']
             
             if not employee_id or not company_id:
+                window.evaluate_js('window.toastFromPython("Employee ID or Company ID not found. Please check your profile.", "error")')
                 return {"success": False, "message": "Employee ID or Company ID not found"}
             
             # Create session data
@@ -325,9 +334,17 @@ class Api:
                 self.session_id = data['data']['_id']
                 return {"success": True, "data": data['data']}
             else:
-                return {"success": False, "message": data.get('message', 'Failed to create session')}
+                error_message = data.get('message', 'Failed to create session')
+                # Check if the error message contains information about an active session
+                if "active session" in error_message.lower():
+                    # Format the message to be more readable
+                    error_message = f"Employee already has an active session. Please stop the current session before starting a new one. Active session ID: {error_message.split('ID:')[-1].strip() if 'ID:' in error_message else 'Unknown'}"
+                
+                window.evaluate_js('window.toastFromPython("Failed to create session!", "error")')
+                return {"success": False, "message": error_message}
         except Exception as e:
             print(f"Create session error: {e}")
+            window.evaluate_js('window.toastFromPython("Failed to create session!", "error")')
             return {"success": False, "message": f"An error occurred: {str(e)}"}
     
     def update_session(self, active_time, idle_time=0, keyboard_rate=0, mouse_rate=0, is_final_update=False):
@@ -369,7 +386,6 @@ class Api:
             links_data = self.prepare_links_for_session()
             
             update_data = {
-                "endTime": end_time,
                 "activeTime": active_time,
                 "idleTime": idle_time,
                 "keyboardActivityRate": keyboard_rate,
@@ -380,6 +396,10 @@ class Api:
                 "notes": "Session from RI Tracker Lite APP v1.",
                 "timezone": "UTC"
             }
+            
+            # Only include endTime when this is the final update (timer is stopped)
+            if is_final_update:
+                update_data["endTime"] = end_time
             # Use safe printing to handle non-ASCII characters
             try:
                 print("Update Session data prepared (details omitted for encoding safety)")
