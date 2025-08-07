@@ -1862,8 +1862,8 @@ class Api:
         the link usage data with the time spent on each link.
         
         On the first check after the app starts (when last_link_check_time is None),
-        it uses a 24-hour window to capture existing browser history that might have
-        been created before the app was started. For subsequent checks, it uses the
+        it uses the timer start time as the cutoff to only capture browser history
+        from when the timer is running. For subsequent checks, it uses the
         regular session update interval (10 minutes) to capture only recent history.
         
         The method handles various edge cases and error conditions, such as missing
@@ -1890,12 +1890,17 @@ class Api:
         current_timestamp = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
         
         # Calculate cutoff time
-        # For the first check, use a much longer window (24 hours) to capture existing browser history
-        # For subsequent checks, use the regular session update interval (10 minutes)
+        # Always use self.start_time as the cutoff to only collect browser history from when the timer is running
+        # For the first check, use the timer start time
+        # For subsequent checks, use the last check time minus the session update interval
         if first_check:
+            # Use timer start time for the first check to only capture history since timer started
+            cutoff_time = int(self.start_time)
+            print(f"First browser history check - using timer start time to capture history only since timer started")
+
             # Use 24 hours for the first check to capture existing browser history
-            cutoff_time = int(current_time) - (24 * 60 * 60)  # 24 hours in seconds
-            print(f"First browser history check - using 24-hour window to capture existing history")
+            # cutoff_time = int(current_time) - (24 * 60 * 60)  # 24 hours in seconds
+            # print(f"First browser history check - using 24-hour window to capture existing history")
         else:
             # Use regular session update interval for subsequent checks
             cutoff_time = int(current_time) - self.session_update_interval
