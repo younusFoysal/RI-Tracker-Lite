@@ -22,6 +22,11 @@ from datetime import datetime, timezone, timedelta
 from config import URLS
 import screeninfo
 
+
+from tzlocal import get_localzone
+
+local_tz = str(get_localzone())
+
 # Import pynput for system-wide keyboard and mouse tracking
 try:
     from pynput import keyboard, mouse
@@ -32,7 +37,7 @@ except ImportError:
 
 
 APP_NAME = "RI_Tracker"
-APP_VERSION = "1.0.14"  # Current version of the application
+APP_VERSION = "1.0.15"  # Current version of the application
 # GITHUB_REPO = "younusFoysal/RI-Tracker-Lite"
 GITHUB_REPO = "RemoteIntegrity/RI-Tracker-Lite-Releases"
 DATA_DIR = os.path.join(os.getenv('LOCALAPPDATA') or os.path.expanduser("~/.config"), APP_NAME)
@@ -75,7 +80,7 @@ class Api:
         self.idle_time = 0
         self.keyboard_activity_rate = 0
         self.mouse_activity_rate = 0
-        self.user_note = "I am working on Task 1"
+        self.user_note = "I am working on Task"
         
         # Window reference for UI interactions
         self.window = None
@@ -276,7 +281,7 @@ class Api:
         window.evaluate_js('window.toastFromPython("Test long error message", "error")')
         return {"success": False, "message": long_message}
 
-    def create_session(self, user_note="I am working on Task 1"):
+    def create_session(self, user_note="I am working on Task"):
         """Create a new session via API
         
         Args:
@@ -366,7 +371,7 @@ class Api:
             window.evaluate_js('window.toastFromPython("Failed to create session!", "error")')
             return {"success": False, "message": f"An error occurred: {str(e)}"}
     
-    def update_session(self, active_time, idle_time=0, keyboard_rate=0, mouse_rate=0, is_final_update=False, user_note="I am working on Task 1"):
+    def update_session(self, active_time, idle_time=0, keyboard_rate=0, mouse_rate=0, is_final_update=False, user_note="I am working on Task"):
         """Update an existing session via API
         
         Args:
@@ -552,7 +557,7 @@ class Api:
                 keyboard_rate=self.keyboard_activity_rate,
                 mouse_rate=self.mouse_activity_rate,
                 is_final_update=False,
-                user_note=self.user_note if hasattr(self, 'user_note') else "I am working on Task 1"
+                user_note=self.user_note if hasattr(self, 'user_note') else "I am working on Task"
             )
             
             # Clear the screenshots array for the next interval
@@ -752,7 +757,7 @@ class Api:
         
         print(f"Screenshot scheduled in {random_interval} seconds ({random_interval/60:.1f} minutes)")
     
-    def start_timer(self, project_name, user_note="I am working on Task 1"):
+    def start_timer(self, project_name, user_note="I am working on Task"):
         """Start the timer and create a new session
         
         Args:
@@ -886,7 +891,7 @@ class Api:
                 keyboard_rate=self.keyboard_activity_rate,
                 mouse_rate=self.mouse_activity_rate,
                 is_final_update=True,
-                user_note=self.user_note if hasattr(self, 'user_note') else "I am working on Task 1"
+                user_note=self.user_note if hasattr(self, 'user_note') else "I am working on Task"
             )
             
             # Stop stats updates
@@ -2181,7 +2186,7 @@ class Api:
                 return {"success": False, "message": "Employee ID not found"}
                 
             response = requests.get(
-                f'{URLS["DAILY_STATS"]}/{employee_id}',
+                f'{URLS["DAILY_STATS"]}/{employee_id}?timezone={local_tz}',
                 headers={
                     "Authorization": f"Bearer {self.auth_token}",
                     "Content-Type": "application/json"
@@ -2210,7 +2215,7 @@ class Api:
                 return {"success": False, "message": "Employee ID not found"}
                 
             response = requests.get(
-                f'{URLS["WEEKLY_STATS"]}/{employee_id}',
+                f'{URLS["WEEKLY_STATS"]}/{employee_id}?timezone={local_tz}',
                 headers={
                     "Authorization": f"Bearer {self.auth_token}",
                     "Content-Type": "application/json"

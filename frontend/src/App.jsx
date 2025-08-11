@@ -439,7 +439,7 @@ function AppContent() {
     const [isTimerOperationPending, setIsTimerOperationPending] = useState(false);
     
     // State for user note
-    const [userNote, setUserNote] = useState("I am working on Task 1");
+    const [userNote, setUserNote] = useState("I am working on Task");
     const [showNotePopup, setShowNotePopup] = useState(false);
 
     // State for stats
@@ -756,7 +756,7 @@ function AppContent() {
     // App constants
     const appIcon = logo;
     const appName = "RI Tracker";
-    const appVersion = "1.0.14";
+    const appVersion = "1.0.15";
 
     return (
         <div className="app-container gradient-bg">
