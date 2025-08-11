@@ -75,6 +75,7 @@ class Api:
         self.idle_time = 0
         self.keyboard_activity_rate = 0
         self.mouse_activity_rate = 0
+        self.user_note = "I am working on Task 1"
         
         # Window reference for UI interactions
         self.window = None
@@ -275,8 +276,12 @@ class Api:
         window.evaluate_js('window.toastFromPython("Test long error message", "error")')
         return {"success": False, "message": long_message}
 
-    def create_session(self):
-        """Create a new session via API"""
+    def create_session(self, user_note="I am working on Task 1"):
+        """Create a new session via API
+        
+        Args:
+            user_note: User's note about what they're working on
+        """
         if not self.auth_token:
             window.evaluate_js('window.toastFromPython("Not authenticated. Please log in.", "error")')
             return {"success": False, "message": "Not authenticated"}
@@ -327,6 +332,7 @@ class Api:
                 "companyId": company_id,
                 "startTime": start_time,
                 "notes": "Session from RI Tracker Lite APP v1.",
+                "userNote": user_note
                 # "timezone": "America/New_York"
                 #"timezone": "UTC"
             }
@@ -360,7 +366,7 @@ class Api:
             window.evaluate_js('window.toastFromPython("Failed to create session!", "error")')
             return {"success": False, "message": f"An error occurred: {str(e)}"}
     
-    def update_session(self, active_time, idle_time=0, keyboard_rate=0, mouse_rate=0, is_final_update=False):
+    def update_session(self, active_time, idle_time=0, keyboard_rate=0, mouse_rate=0, is_final_update=False, user_note="I am working on Task 1"):
         """Update an existing session via API
         
         Args:
@@ -369,6 +375,7 @@ class Api:
             keyboard_rate: Keyboard activity rate (events per minute)
             mouse_rate: Mouse activity rate (events per minute)
             is_final_update: Whether this is the final update (when timer is stopped)
+            user_note: User's note about what they're working on
         """
         if not self.auth_token or not self.session_id:
             return {"success": False, "message": "Not authenticated or no active session"}
@@ -416,6 +423,7 @@ class Api:
                 "applications": applications_data,
                 "links": links_data,
                 "notes": "Session from RI Tracker Lite APP v1.",
+                "userNote": user_note
                 # "timezone": "UTC"
             }
             
@@ -543,7 +551,8 @@ class Api:
                 idle_time=int(self.idle_time),
                 keyboard_rate=self.keyboard_activity_rate,
                 mouse_rate=self.mouse_activity_rate,
-                is_final_update=False
+                is_final_update=False,
+                user_note=self.user_note if hasattr(self, 'user_note') else "I am working on Task 1"
             )
             
             # Clear the screenshots array for the next interval
@@ -743,11 +752,17 @@ class Api:
         
         print(f"Screenshot scheduled in {random_interval} seconds ({random_interval/60:.1f} minutes)")
     
-    def start_timer(self, project_name):
-        """Start the timer and create a new session"""
+    def start_timer(self, project_name, user_note="I am working on Task 1"):
+        """Start the timer and create a new session
+        
+        Args:
+            project_name: The name of the project
+            user_note: User's note about what they're working on
+        """
         current_time = time.time()
         self.start_time = current_time
         self.current_project = project_name
+        self.user_note = user_note
         
         # Reset all activity tracking variables
         self.active_time = 0
@@ -798,7 +813,7 @@ class Api:
         stats = self.start_stats_updates()
         
         # Create a new session
-        result = self.create_session()
+        result = self.create_session(user_note)
         
         # Start session updates (every 10 minutes)
         self.start_session_updates()
@@ -870,7 +885,8 @@ class Api:
                 idle_time=self.idle_time,
                 keyboard_rate=self.keyboard_activity_rate,
                 mouse_rate=self.mouse_activity_rate,
-                is_final_update=True
+                is_final_update=True,
+                user_note=self.user_note if hasattr(self, 'user_note') else "I am working on Task 1"
             )
             
             # Stop stats updates
