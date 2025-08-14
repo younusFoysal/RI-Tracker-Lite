@@ -102,7 +102,7 @@ class Api:
         
         # Stats update variables
         self.stats_timer = None
-        self.stats_update_interval = 720  # 12 minutes in seconds
+        self.stats_update_interval = 600  # 10 minutes in seconds
         
         # Session update variables
         self.session_update_timer = None
